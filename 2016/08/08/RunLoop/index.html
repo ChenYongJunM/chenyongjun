@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    
+
+    <title>
+      RunLoop | Mr Chen 
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    
+      <meta name="author" content="YongJun Chen">
+    
+    
+
+    <meta name="description" content="iOS夯实：RunLoop
+目标：用简洁易懂的语言归纳runLoop和对我们日常开发的影响。
+
+什么是RunLoop
+
+runLoop是一个与线程相关的机制。
+在应用程序层面，无论在哪个操作系统，所有线程的运行方式基本是一样的。在线程开始运行后,都在running, ready, 或是 blocked状态中切换，直至终止。在创建一个新的线程的时候，我们必须指定入口函数（entry-point fu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RunLoop | Mr Chen">
+<meta property="og:url" content="https://chenyongjunm.github.io/chenyongjun/2016/08/08/RunLoop/index.html">
+<meta property="og:site_name" content="Mr Chen">
+<meta property="og:description" content="iOS夯实：RunLoop
+目标：用简洁易懂的语言归纳runLoop和对我们日常开发的影响。
+
+什么是RunLoop
+
+runLoop是一个与线程相关的机制。
+在应用程序层面，无论在哪个操作系统，所有线程的运行方式基本是一样的。在线程开始运行后,都在running, ready, 或是 blocked状态中切换，直至终止。在创建一个新的线程的时候，我们必须指定入口函数（entry-point fu">
+<meta property="og:updated_time" content="2016-08-08T07:11:01.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RunLoop | Mr Chen">
+<meta name="twitter:description" content="iOS夯实：RunLoop
+目标：用简洁易懂的语言归纳runLoop和对我们日常开发的影响。
+
+什么是RunLoop
+
+runLoop是一个与线程相关的机制。
+在应用程序层面，无论在哪个操作系统，所有线程的运行方式基本是一样的。在线程开始运行后,都在running, ready, 或是 blocked状态中切换，直至终止。在创建一个新的线程的时候，我们必须指定入口函数（entry-point fu">
+    
+    
+    
+      <link rel="icon" type="image/x-icon" href="/favicon.png">
+    
+    <link rel="stylesheet" href="/chenyongjun/css/uno.css">
+    <link rel="stylesheet" href="/chenyongjun/css/highlight.css">
+    <link rel="stylesheet" href="/chenyongjun/css/archive.css">
+    <link rel="stylesheet" href="/chenyongjun/css/china-social-icon.css">
+
+</head>
+<body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="icon icon-list btn-mobile-menu__icon"></i>
+        <i class="icon icon-x-circle btn-mobile-close__icon hidden"></i>
+    </span>
+
+    
+
+<header class="panel-cover panel-cover--collapsed">
+
+
+  <div class="panel-main">
+
+  
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        
+
+        <h1 class="panel-cover__title panel-title"><a href="/" title="link to homepage">Mr Chen</a></h1>
+        <hr class="panel-cover__divider" />
+
+        
+        <p class="panel-cover__description">
+          正在修行的路上
+        </p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+
+        <div class="navigation-wrapper">
+
+          <nav class="cover-navigation cover-navigation--primary">
+            <ul class="navigation">
+
+              
+                
+                <li class="navigation__item"><a href="/chenyongjun/#blog" title="" class="">首页</a></li>
+              
+
+            </ul>
+          </nav>
+
+          <!-- ----------------------------
+To add a new social icon simply duplicate one of the list items from below
+and change the class in the <i> tag to match the desired social network
+and then add your link to the <a>. Here is a full list of social network
+classes that you can use:
+
+    icon-social-500px
+    icon-social-behance
+    icon-social-delicious
+    icon-social-designer-news
+    icon-social-deviant-art
+    icon-social-digg
+    icon-social-dribbble
+    icon-social-facebook
+    icon-social-flickr
+    icon-social-forrst
+    icon-social-foursquare
+    icon-social-github
+    icon-social-google-plus
+    icon-social-hi5
+    icon-social-instagram
+    icon-social-lastfm
+    icon-social-linkedin
+    icon-social-medium
+    icon-social-myspace
+    icon-social-path
+    icon-social-pinterest
+    icon-social-rdio
+    icon-social-reddit
+    icon-social-skype
+    icon-social-spotify
+    icon-social-stack-overflow
+    icon-social-steam
+    icon-social-stumbleupon
+    icon-social-treehouse
+    icon-social-tumblr
+    icon-social-twitter
+    icon-social-vimeo
+    icon-social-xbox
+    icon-social-yelp
+    icon-social-youtube
+    icon-social-zerply
+    icon-mail
+
+-------------------------------->
+
+<!-- add social info here -->
+
+
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel-cover--overlay"></div>
+  </div>
+</header>
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner entry">
+            
+
+<article class="post-container post-container--single">
+
+  <header class="post-header">
+    
+    <h1 class="post-title">RunLoop</h1>
+
+    
+
+    <div class="post-meta">
+      <time datetime="2016-08-08" class="post-meta__date date">2016-08-08</time> 
+
+      <span class="post-meta__tags tags">
+
+          
+
+          
+
+      </span>
+    </div>
+    
+    
+
+  </header>
+
+  <section id="post-content" class="article-content post">
+    <p>iOS夯实：RunLoop</p>
+<p>目标：用简洁易懂的语言归纳runLoop和对我们日常开发的影响。</p>
+<ol>
+<li>什么是RunLoop</li>
+</ol>
+<p>runLoop是一个与线程相关的机制。</p>
+<p>在应用程序层面，无论在哪个操作系统，所有线程的运行方式基本是一样的。在线程开始运行后,都在running, ready, 或是 blocked状态中切换，直至终止。在创建一个新的线程的时候，我们必须指定入口函数（entry-point function）。当入口函数执行完毕或是我们主动终止线程，线程就会停止运行然后被系统回收。</p>
+<p>如果任务执行完毕，线程就被回收，那么下一个新的任务来，我们还需要重新创建和配置一个线程。非常地消耗性能，这个时候就引出了我们的Runloop机制。用Runloop来实现线程的常驻。</p>
+<p>Runloop可以简单理解为一个循环。</p>
+<p>func loop() {<br>    repeat {<br>        var event = nextEvent();<br>        process(event);<br>    } while (event != quit);<br>}<br>在这个循环里面等待事件，然后处理事件。而这个循环是基于线程的。 通过RunLoop这样的机制，线程能够在没有事件需要处理的时候休息，有事情的时候运行。减轻CPU压力。</p>
+<ol>
+<li>日常开发中的RunLoop</li>
+</ol>
+<p>简单理解了RunLoop之后，我们发现其实我们平时的开发，背后都无时无刻与runLoop有关。</p>
+<p>但是我们很幸运不需要把时间都浪费在纠结这些底层细节上,绝大部分工作都交给了操作系统为我们实现。 所以关于runLoop，我们在不想被底层细节包围的前提下，需要了解和做些什么呢。</p>
+<p>需要了解RunLoop的坑：</p>
+<p>NSTimer<br>日常开发中，我们与runLoop接触得最近可能就是通过NSTimer了。一个Timer一次只能加入到一个RunLoop中。我们日常使用的时候，通常就是加入到当前的runLoop的default mode中。</p>
+<p>提到mode,就需要谈谈RunLoop Modes<br>简单的说，runLoop有多个Mode,RunLoop只能运行一个Mode,runLoop只会处理它当前Mode的事件。</p>
+<p>所以就会导致一些地方我们需要去注意。</p>
+<p>一般Timer是运行在RunLoop的default mode上，而ScrollView在用户滑动时，主线程RunLoop会转到UITrackingRunLoopMode。而这个时候，Timer就不会运行,方法得不到fire。<br>用一个真实例子来说明（自身教训）：</p>
+<p>注册界面</p>
+<p>在一次写一个注册界面的时候，用户点击发送验证码后，使用Timer,倒数60秒以允许用户再次申请发送验证码，同时每一秒更新界面秒数信息。而此时Timer运行于主线程的default mode上。若此时用户滑动显示屏，则会出现Timer失效,界面得不到更新的情况。此时就是因为RunLoop的mode原因。</p>
+<p>NSURLConnection,NSStream也是同样的情况，默认运行于default mode。</p>
+<p>解决方案：</p>
+<p>第一种:设置RunLoop Mode，例如NSTimer,我们指定它运行于NSRunLoopCommonModes,这是一个Mode的集合。注册到这个Mode下后，无论当前runLoop运行哪个mode,事件都能得到执行。<br>第二种:另一种解决Timer的方法是，我们在另外一个线程执行和处理Timer事件，然后在主线程更新UI.</p>
+
+  </section>
+
+  
+  
+</article>
+
+
+            <footer class="footer">
+
+    <span class="footer__copyright">&copy; 2014-2015. | 由<a href="https://hexo.io/">Hexo</a>强力驱动 | 主题<a href="https://github.com/someus/huno">Huno</a></span>
+    
+</footer>
+        </div>
+    </div>
+
+    <!-- js files -->
+    <script src="/chenyongjun/js/jquery.min.js"></script>
+    <script src="/chenyongjun/js/main.js"></script>
+    <script src="/chenyongjun/js/scale.fix.js"></script>
+    
+
+    
+
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript"> 
+        $(document).ready(function(){
+            MathJax.Hub.Config({ 
+                tex2jax: {inlineMath: [['[latex]','[/latex]'], ['\\(','\\)']]} 
+            });
+        });
+    </script>
+
+
+    
+
+    <script src="/chenyongjun/js/awesome-toc.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $.awesome_toc({
+                overlay: true,
+                contentId: "post-content",
+            });
+        });
+    </script>
+
+
+    
+    
+    <!--kill ie6 -->
+<!--[if IE 6]>
+  <script src="//letskillie6.googlecode.com/svn/trunk/2/zh_CN.js"></script>
+<![endif]-->
+
+</body>
+</html>

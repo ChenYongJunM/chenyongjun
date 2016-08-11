@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    
+
+    <title>
+      iOS内存管理 | Mr Chen 
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    
+      <meta name="author" content="YongJun Chen">
+    
+    
+
+    <meta name="description" content="基本信息
+Objective-C 提供了两种内存管理方式。
+MRR （manual retain-release） 手动内存管理这是基于reference counting实现的,由NSObject与runtime environment共同工作实现。
+ARC （Automatic Reference Counting）自动引用技术ARC使用了基于MBR同样的reference counting机">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS内存管理 | Mr Chen">
+<meta property="og:url" content="https://chenyongjunm.github.io/chenyongjun/2016/08/08/iOS内存管理/index.html">
+<meta property="og:site_name" content="Mr Chen">
+<meta property="og:description" content="基本信息
+Objective-C 提供了两种内存管理方式。
+MRR （manual retain-release） 手动内存管理这是基于reference counting实现的,由NSObject与runtime environment共同工作实现。
+ARC （Automatic Reference Counting）自动引用技术ARC使用了基于MBR同样的reference counting机">
+<meta property="og:updated_time" content="2016-08-08T07:16:56.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS内存管理 | Mr Chen">
+<meta name="twitter:description" content="基本信息
+Objective-C 提供了两种内存管理方式。
+MRR （manual retain-release） 手动内存管理这是基于reference counting实现的,由NSObject与runtime environment共同工作实现。
+ARC （Automatic Reference Counting）自动引用技术ARC使用了基于MBR同样的reference counting机">
+    
+    
+    
+      <link rel="icon" type="image/x-icon" href="/favicon.png">
+    
+    <link rel="stylesheet" href="/chenyongjun/css/uno.css">
+    <link rel="stylesheet" href="/chenyongjun/css/highlight.css">
+    <link rel="stylesheet" href="/chenyongjun/css/archive.css">
+    <link rel="stylesheet" href="/chenyongjun/css/china-social-icon.css">
+
+</head>
+<body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="icon icon-list btn-mobile-menu__icon"></i>
+        <i class="icon icon-x-circle btn-mobile-close__icon hidden"></i>
+    </span>
+
+    
+
+<header class="panel-cover panel-cover--collapsed">
+
+
+  <div class="panel-main">
+
+  
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        
+
+        <h1 class="panel-cover__title panel-title"><a href="/" title="link to homepage">Mr Chen</a></h1>
+        <hr class="panel-cover__divider" />
+
+        
+        <p class="panel-cover__description">
+          正在修行的路上
+        </p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+
+        <div class="navigation-wrapper">
+
+          <nav class="cover-navigation cover-navigation--primary">
+            <ul class="navigation">
+
+              
+                
+                <li class="navigation__item"><a href="/chenyongjun/#blog" title="" class="">首页</a></li>
+              
+
+            </ul>
+          </nav>
+
+          <!-- ----------------------------
+To add a new social icon simply duplicate one of the list items from below
+and change the class in the <i> tag to match the desired social network
+and then add your link to the <a>. Here is a full list of social network
+classes that you can use:
+
+    icon-social-500px
+    icon-social-behance
+    icon-social-delicious
+    icon-social-designer-news
+    icon-social-deviant-art
+    icon-social-digg
+    icon-social-dribbble
+    icon-social-facebook
+    icon-social-flickr
+    icon-social-forrst
+    icon-social-foursquare
+    icon-social-github
+    icon-social-google-plus
+    icon-social-hi5
+    icon-social-instagram
+    icon-social-lastfm
+    icon-social-linkedin
+    icon-social-medium
+    icon-social-myspace
+    icon-social-path
+    icon-social-pinterest
+    icon-social-rdio
+    icon-social-reddit
+    icon-social-skype
+    icon-social-spotify
+    icon-social-stack-overflow
+    icon-social-steam
+    icon-social-stumbleupon
+    icon-social-treehouse
+    icon-social-tumblr
+    icon-social-twitter
+    icon-social-vimeo
+    icon-social-xbox
+    icon-social-yelp
+    icon-social-youtube
+    icon-social-zerply
+    icon-mail
+
+-------------------------------->
+
+<!-- add social info here -->
+
+
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel-cover--overlay"></div>
+  </div>
+</header>
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner entry">
+            
+
+<article class="post-container post-container--single">
+
+  <header class="post-header">
+    
+    <h1 class="post-title">iOS内存管理</h1>
+
+    
+
+    <div class="post-meta">
+      <time datetime="2016-08-08" class="post-meta__date date">2016-08-08</time> 
+
+      <span class="post-meta__tags tags">
+
+          
+
+          
+
+      </span>
+    </div>
+    
+    
+
+  </header>
+
+  <section id="post-content" class="article-content post">
+    <p>基本信息</p>
+<p>Objective-C 提供了两种内存管理方式。</p>
+<p>MRR （manual retain-release） 手动内存管理<br>这是基于reference counting实现的,由NSObject与runtime environment共同工作实现。</p>
+<p>ARC （Automatic Reference Counting）自动引用技术<br>ARC使用了基于MBR同样的reference counting机制，区别在于系统在编译的时候帮助我们插入了合适的memory management method。</p>
+<p>Good Practices能有效的避免内存相关问题</p>
+<p>基于内存，主要有两种错误</p>
+<p>清空或覆盖了还在使用的内存<br>这种清空通常会导致应用崩溃，甚至用户数据遭到改写<br>没有清空已经不需要的内存会导致内存泄露<br>会导致系统性能下降，应用遭到系统终止<br>实际上，我们不应该只从reference counting的角度来管理内存，这样会让我们纠结于底层细节。我们应该站在object ownership and object graphs的角度来管理内存</p>
+<p>可以用一幅这样的图来阐明：</p>
+<p>旧时代的细节</p>
+<p>一.基本内存管理准则</p>
+<p>基本的内存管理准则：Cocoa为我们提供了这些准则</p>
+<p>You own any object you create<br>我们通过名字前缀为“alloc”, “new”, “copy”, or “mutableCopy”的方法创建对象</p>
+<p>You can take ownership of an object using retain<br>通过retain来获取对象的ownership,使用retain主要有两种场景</p>
+<p>在accessor method 或 init method。来获取你想存储的对象的所有权<br>在某些场景里避免一个对象被移除，我们可以对它进行retain<br>When you no longer need it, you must relinquish ownership of an object you own<br>当我们需要释放一个对象所有权时,我们通过对它发送release或autorelaese消息。</p>
+<p>You must not relinquish ownership of an object you do not own<br>不要释放你没有拥有的对象所有权</p>
+<p>关于dealloc:</p>
+<p>NSObject为我们提供了一个dealloc方法,当对象被销毁时，系统会自动调用它。这个方法的作用主要是清空对象自身内存与它所持有的资源。例如：</p>
+<p> @interface Person : NSObject<br>@property (retain) NSString <em>firstName;<br>@property (retain) NSString </em>lastName;<br>@property (assign, readonly) NSString *fullName;<br>@end<br>@implementation Person</p>
+<ul>
+<li>(void)dealloc<br>  [_firstName release];<br>  [_lastName release];<br>  [super dealloc];<br>}<br>@end<br>需要强调的是：永远不要自己调用dealloc方法<br>在dealloc的最后需要调用super class的dealloc</li>
+</ul>
+<p>二.实践中的内存管理准则</p>
+<ol>
+<li>使用存取方法来简化内存管理。</li>
+</ol>
+<p>如果代码中都是一堆retain release，必然不是一个好的情况。在存取方法里面进行retain和release的操作能够简化内存管理。例如：</p>
+<ul>
+<li>(void)setCount:(NSNumber *)newCount {<br>  [newCount retain];<br>  [_count release];<br>  // Make the new assignment.<br>  _count = newCount;<br>}</li>
+</ul>
+<ol>
+<li>使用存取方法来设置Property value</li>
+</ol>
+<p>对比如下代码，第一种使用了存取方法来设置，第二种直接对实例变量操作。显然我们应该采用第一种，使用第二种情况，简单的情况还好，如果情况一旦复杂,就非常容易出错。并且直接对实例变量操作，不会引发KVO通知。</p>
+<ul>
+<li><p>(void)reset {<br>  NSNumber *zero = [[NSNumber alloc] initWithInteger:0];<br>  [self setCount:zero];<br>  [zero release];<br>}</p>
+</li>
+<li><p>(void)reset {<br>  NSNumber *zero = [[NSNumber alloc] initWithInteger:0];<br>  [_count release];<br>  _count = zero;<br>}</p>
+</li>
+</ul>
+<ol>
+<li>不要在初始化方法和dealloc方法中使用Accessor Methods</li>
+</ol>
+<p>苹果在《Advanced Memory Management Programming Guide》指出：</p>
+<p>Don’t Use Accessor Methods in Initializer Methods and dealloc The only places you shouldn’t use accessor methods to set an instance variable are in initializer methods and dealloc. To initialize a counter object with a number object representing zero, you might implement an init method as follows:</p>
+<ul>
+<li>init {<br>  self = [super init];<br>  if (self) {<pre><code>_count = [[NSNumber alloc] initWithInteger:0];
+</code></pre>  }<br>  return self;<br>}<br>唯一不需要使用Accessor Methods的地方是initializer和dealloc. 在苹果官方文档中没有解释为什么。经过一番查阅后,最主要的原因是此时对象的状况不确定，尚未完全初始化完毕，而导致一些问题的发生。</li>
+</ul>
+<p>例如这个类或者子类重写了setMethod,里面调用了其他一些数据或方法,而这些数据和方法需要一个已经完全初始化好的对象。而在init中,对象的状态是不确定的。</p>
+<p>举个例子，一个子类重写了set方法，在里面进行了一些子类特有的操作，而此时如果父类在init直接使用Accessor Methods，就会导致问题的发送。</p>
+<p>其它一些问题还有，像会触发KVO notification等。[^1] [^2]</p>
+<p>总之，记住在开发中记住这个principle最重要。</p>
+<p>在开发中,我发现还是有人因为疏忽或不知道而直接在init方法里面使用self.property = XXX来进行赋值,留下了一些隐患。Swift去除了直接和instance variable打交道的途径。统一使用property进行管理,并对init进行严格的规定,提升了安全性,解决了人为因素导致的错误。欢迎对Swift有兴趣的同学继续阅读。从Objective-C到Swift</p>
+<p>[^1]: stackoverflow [^2]: objc-zen-book</p>
+<ol>
+<li>使用弱引用来避免引用环</li>
+</ol>
+<p>我们都知道在ARC，弱引用通过声明property的attribute为weak来实现。</p>
+<p>而在MRR中则是通过引用对象，但是不retain它来实现（A weak reference is a non-owning relationship where the source object does not retain the object to which it has a reference）</p>
+<p>在Cocoa中，典型需要使用弱引用的有delegate，data source, notification observer</p>
+<p>我们需要注意处理好弱引用对象，如果对已经被销毁的对象发送信息，则会导致crash.通常被弱引用的对象当它将被销毁时，负责通知其它object.</p>
+<p>像notification center保存了observer的弱引用，因此当被弱引用observer准备结束生命周期时，observer需要通知notification center,unregister自己。</p>
+<ol>
+<li>不要让你正在使用的对象被移除</li>
+</ol>
+<p>观察以下两种代码，第一种因为没有retain,对象可能会被移除，而第二种是正确的写法</p>
+<p>heisenObject = [array objectAtIndex:n];<br>[array removeObjectAtIndex:n];<br>// heisenObject could now be invalid.</p>
+<p>heisenObject = [[array objectAtIndex:n] retain];<br>[array removeObjectAtIndex:n];<br>// Use heisenObject…<br>[heisenObject release];</p>
+<ol>
+<li>Collections类拥有其收集的的对象的所有权</li>
+</ol>
+<p>例如NSArray,dictionary等。他们负责其收集的对象的所有权,因此我们不需要retain存进去的对象。 例如下面的allocedNumber就不需要retain了。</p>
+<p>for (i = 0; i &lt; 10; i++) {<br>    NSNumber *allocedNumber = [[NSNumber alloc] initWithInteger:i];<br>    [array addObject:allocedNumber];<br>    [allocedNumber release];<br>}</p>
+<ol>
+<li>最后,以上这些ownership policy是基于retain count实现的</li>
+</ol>
+<p>当你创建一个对象，它的retain count为1。<br>当你对一个对象发送retain信息，它的retain count +1<br>当你对一个对象发送release信息，他的retain count -1<br>当你对一个对象发送autorelease信息，在当前autorelease pool block结束时，retain count -1<br>当一个对象的retain count 降至0，它就被dealloced了。<br>三.使用Autorelease Pool block</p>
+<p>autorelease pool 为我们提供了一个机制，避免当我们解除一个对象所有权时,对象被立刻销毁（例如从一个方法里返回一个对象）</p>
+<p>一个autorelease pool block对象是这样子的：</p>
+<p>@autoreleasepool {<br>    // Code that creates autoreleased objects.<br>}<br>在block的最后，所有收到过autorelease消息的对象都会接收到release消息。</p>
+<p>在ARC的新时代里面，autorelease pool block主要用于处理避免内存峰值，只是我们不需要再手动添加autorelease的代码了</p>
+<p>例如以下这个例子（有点生编硬造，主要为了阐明一下）<br>如果我们没有添加autoreleasepool,我们最后可需要释放10000*10000个对象，而不是每次循环都分别释放掉10000个对象</p>
+<ul>
+<li>(void)useALoadOfNumbers {<br>  for (int j = 0; j &lt; 10000; ++j) {<pre><code>@autoreleasepool {
+    for (int i = 0; i &lt; 10000; ++i) {
+        NSNumber *number = [NSNumber numberWithInt:(i+j)];
+        NSLog(@&quot;number = %p&quot;, number);
+    }
+}
+</code></pre>  }<br>}</li>
+</ul>
+
+  </section>
+
+  
+  
+</article>
+
+
+            <footer class="footer">
+
+    <span class="footer__copyright">&copy; 2014-2015. | 由<a href="https://hexo.io/">Hexo</a>强力驱动 | 主题<a href="https://github.com/someus/huno">Huno</a></span>
+    
+</footer>
+        </div>
+    </div>
+
+    <!-- js files -->
+    <script src="/chenyongjun/js/jquery.min.js"></script>
+    <script src="/chenyongjun/js/main.js"></script>
+    <script src="/chenyongjun/js/scale.fix.js"></script>
+    
+
+    
+
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript"> 
+        $(document).ready(function(){
+            MathJax.Hub.Config({ 
+                tex2jax: {inlineMath: [['[latex]','[/latex]'], ['\\(','\\)']]} 
+            });
+        });
+    </script>
+
+
+    
+
+    <script src="/chenyongjun/js/awesome-toc.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $.awesome_toc({
+                overlay: true,
+                contentId: "post-content",
+            });
+        });
+    </script>
+
+
+    
+    
+    <!--kill ie6 -->
+<!--[if IE 6]>
+  <script src="//letskillie6.googlecode.com/svn/trunk/2/zh_CN.js"></script>
+<![endif]-->
+
+</body>
+</html>
